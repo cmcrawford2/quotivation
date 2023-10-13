@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Quotes from "./components/quotes/Quotes";
+import FavoriteQuotes from "./components/quotes/FavoriteQuotes";
+import Message from "./components/Message";
 import { Loader } from "react-feather";
 import "./App.css";
 
@@ -10,6 +12,8 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [category, setCategory] = useState("All");
   const [favoriteQuotes, setFavoriteQuotes] = useState([]);
+  const [messageText, setMessageText] = useState("");
+  const [showMessage, setShowMessage] = useState(false);
 
   const quotesUrl =
     "https://gist.githubusercontent.com/skillcrush-curriculum/6365d193df80174943f6664c7c6dbadf/raw/1f1e06df2f4fc3c2ef4c30a3a4010149f270c0e0/quotes.js";
@@ -54,31 +58,45 @@ function App() {
     const alreadyFavorite = favoriteQuotes.find(
       (quote) => quote.id === quoteId
     );
-    if (alreadyFavorite) console.log("Already favorite");
-    else if (favoriteQuotes.length < maxFaves) {
+    if (alreadyFavorite) {
+      setMessageText(
+        "This quote is already in your favorites! Choose another."
+      );
+    } else if (favoriteQuotes.length < maxFaves) {
       setFavoriteQuotes(favoriteQuotes.concat(selectedQuote));
-      console.log("Adding favorite quote");
-    } else console.log("too many favorites!");
+      setMessageText("Added to favorites!");
+    } else {
+      setMessageText(
+        "Max number of Favorite Quotes reached. Please delete one to add another!"
+      );
+    }
+    setShowMessage(true);
+  }
+
+  function removeMessage() {
+    setShowMessage(false);
+  }
+
+  function removeFromFavorites(quoteId) {
+    setFavoriteQuotes(favoriteQuotes.filter((quote) => quote.id !== quoteId));
   }
 
   return (
     <div className="App">
+      {showMessage && (
+        <Message messageText={messageText} removeMessage={removeMessage} />
+      )}
       <Header />
       <main>
         {loading ? (
           <Loader />
         ) : (
           <>
-            <section className="favorite-quotes">
-              <div className="wrapper quotes">
-                <h3>Top 3 favorite quotes</h3>
-                {favoriteQuotes.length > 0 && JSON.stringify(favoriteQuotes)}
-                <div className="favorite-quotes-description">
-                  You can add up to three favorites by selecting from the
-                  options below. <br /> Once you choose, they will appear here.
-                </div>
-              </div>
-            </section>
+            <FavoriteQuotes
+              favoriteQuotes={favoriteQuotes}
+              maxFaves={maxFaves}
+              removeFromFavorites={removeFromFavorites}
+            />
             <Quotes
               quotes={
                 category === "All"
@@ -91,6 +109,7 @@ function App() {
               category={category}
               handleCategoryChange={handleCategoryChange}
               addToFavorites={addToFavorites}
+              favoriteQuotes={favoriteQuotes}
             />
           </>
         )}

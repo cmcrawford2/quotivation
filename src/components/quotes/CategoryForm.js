@@ -8,8 +8,8 @@ export default function CategoryForm({
 }) {
   return (
     <div className="category-form">
-      <Filter />
       <form className="category-filter">
+        <Filter />
         <label htmlFor="category">Filter Quotes:</label>
         <select
           id="category"

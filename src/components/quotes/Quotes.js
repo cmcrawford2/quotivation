@@ -8,6 +8,7 @@ export default function Quotes({
   category,
   handleCategoryChange,
   addToFavorites,
+  favoriteQuotes,
 }) {
   return (
     <section className="all-quotes">
@@ -26,6 +27,7 @@ export default function Quotes({
             quote={quote}
             key={quote.id}
             addToFavorites={addToFavorites}
+            favoriteQuotes={favoriteQuotes}
           />
         ))}
       </div>
